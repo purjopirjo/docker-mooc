@@ -1,0 +1,8 @@
+FROM node:16.20.0-bullseye
+WORKDIR /home/node/app
+COPY ./example-frontend /home/node/app
+RUN npm ci .
+RUN REACT_APP_BACKEND_URL=http://localhost:5001 npm run build .
+RUN npm install -g serve
+CMD serve -s -l 5000 build
+EXPOSE 5000

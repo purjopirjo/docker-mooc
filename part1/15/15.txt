@@ -1,0 +1,7 @@
+docker build . -t exer15 -f ./Dockerfile
+docker tag video-downloader:latest servufi/video-downloader:latest
+docker push servufi/video-downloader:latest
+
+# docker pull servufi/video-downloader:latest
+# docker run -it --rm -v $(pwd):/dl servufi/video-downloader
+# https://hub.docker.com/r/servufi/video-downloader

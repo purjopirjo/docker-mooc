@@ -1,0 +1,2 @@
+cp -r ../../part1/12/material-applications/scaling-exercise .
+docker compose up -d --scale compute=3

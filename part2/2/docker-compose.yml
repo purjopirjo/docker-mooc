@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  get-simple-web-service-log:
+    image: devopsdockeruh/simple-web-service
+    volumes:
+      - ./text.log:/usr/src/app/text.log:rw
+    container_name: web-text-log
+  simple-web-service:
+    image: devopsdockeruh/simple-web-service
+    environment: 
+      - PORT=1337
+    ports:
+      - 80:1337
+    container_name: web-service
+    command: sh -c "server"

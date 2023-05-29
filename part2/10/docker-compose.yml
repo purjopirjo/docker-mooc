@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ../../part1/14/example-frontend/build:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+
+  db:
+    image: postgres:alpine3.18
+    restart: unless-stopped
+    volumes:
+      - ./database:/var/lib/postgresql/data:rw
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+
+  redis:
+    image: redis:7.2-rc2-alpine3.18
+    volumes:
+      - ./cache:/data:rw
+
+  backend:
+    image: golang:1.16-bullseye
+    working_dir: /usr/src/app
+    volumes:
+      - ../../part1/14/example-backend:/usr/src/app
+    environment:
+      - PORT=5001
+      - REQUEST_ORIGIN=http://localhost
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DATABASE=postgres
+    ports:
+      - 5001
+    command: sh -c "go mod download && go mod verify && go build && ./server"
+    depends_on:
+      - db
+      - redis
+
+  frontend:
+    image: node:16.20.0-bullseye
+    working_dir: /home/node/app
+    volumes:
+      - ../../part1/14/example-frontend:/home/node/app
+    ports:
+      - 5000
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost/api
+    command: sh -c "npm install --no-save . && npm run build . && npm install -g serve && serve -s -l 5000 build"
+    depends_on:
+      - backend

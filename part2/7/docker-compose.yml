@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  backend:
+    image: golang:1.16-bullseye
+    container_name: backend
+    working_dir: /usr/src/app
+    volumes:
+      - ../../part1/14/example-backend:/usr/src/app
+    environment:
+      - PORT=5001
+      - REQUEST_ORIGIN=http://localhost:5000
+      - REDIS_HOST=redis-cache
+      - POSTGRES_HOST=db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DATABASE=postgres
+    ports:
+      - 5001:5001
+    command: sh -c "go mod download && go mod verify && go build && ./server"
+    depends_on:
+      - db
+      - redis
+
+  redis:
+    image: redis:7.2-rc2-alpine3.18
+    container_name: redis-cache
+    volumes:
+      - ./cache:/data:rw
+
+  db:
+    image: postgres:alpine3.18
+    container_name: db_backend
+    restart: unless-stopped
+    volumes:
+      - ./database:/var/lib/postgresql/data:rw
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+
+  frontend:
+    image: node:16.20.0-bullseye
+    container_name: frontend
+    working_dir: /home/node/app
+    volumes:
+      - ../../part1/14/example-frontend:/home/node/app
+    ports:
+      - 5000:5000
+    command: sh -c "npm ci . && REACT_APP_BACKEND_URL=http://localhost:5001 npm run build . && npm install -g serve && serve -s -l 5000 build"
+    depends_on:
+      - backend
