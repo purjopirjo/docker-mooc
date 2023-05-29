@@ -20,12 +20,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
       - 
         name: Build and push
         uses: docker/build-push-action@v4
         with:
+          context: part3/1/express-app
+          file: part3/1/express-app/Dockerfile
           push: true
           tags: servufi/mooc-express-app:latest
