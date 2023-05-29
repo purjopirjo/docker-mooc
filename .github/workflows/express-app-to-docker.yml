@@ -3,7 +3,7 @@ name: Publish image to Docker Hub
 on:
   push:
     paths:
-      - 'docker-mooc/part3/1/express-app/**'
+      - 'purjopirjo/docker-mooc/part3/1/express-app/**'
     branches:
       - main
 
