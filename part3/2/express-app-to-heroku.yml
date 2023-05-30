@@ -26,4 +26,4 @@ jobs:
             docker push registry.heroku.com/mooc-express-app/web
         
       - name: Release to Heroku
-        run: heroku container:release web -a mooc-express-app
+        run: heroku container:release web -a mooc-express-app --username=${{ secrets.HEROKU_EMAIL }}
