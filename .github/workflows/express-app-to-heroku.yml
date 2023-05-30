@@ -15,20 +15,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Store Heroku API key in .netrc
-        run: |
-          echo -e "machine api.heroku.com\n  login ${{ secrets.HEROKU_EMAIL }}\n  password ${{ secrets.HEROKU_API_KEY }}" >> $HOME/.netrc
-          echo -e "machine git.heroku.com\n  login ${{ secrets.HEROKU_EMAIL }}\n  password ${{ secrets.HEROKU_API_KEY }}" >> $HOME/.netrc
-          chmod 600 $HOME/.netrc
-
       - name: Login to Heroku
-        run: heroku login
+        run: |
+          echo "${{ secrets.HEROKU_API_KEY }}" | docker login --username=_ --password-stdin registry.heroku.com
 
       - name: Push Docker image to Heroku
         run: |
-          docker pull servufi/mooc-express-app:latest
-          docker tag servufi/mooc-express-app:latest registry.heroku.com/mooc-express-app/web
-          docker push registry.heroku.com/mooc-express-app/web
-
+            docker pull servufi/mooc-express-app:latest
+            docker tag servufi/mooc-express-app:latest registry.heroku.com/mooc-express-app/web
+            docker push registry.heroku.com/mooc-express-app/web
+        
       - name: Release to Heroku
-        run: heroku container:release web -a mooc-express-app
+        run: HEROKU_API_KEY="${{ secrets.HEROKU_API_KEY }}" heroku container:release web -a mooc-express-app
