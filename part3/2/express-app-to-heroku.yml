@@ -20,7 +20,10 @@ jobs:
           echo "${{ secrets.HEROKU_API_KEY }}" | docker login --username=_ --password-stdin registry.heroku.com
 
       - name: Push Docker image to Heroku
-        run: docker push registry.heroku.com/mooc-express-app/web
-
+        run: |
+            docker pull servufi/mooc-express-app:latest
+            docker tag servufi/mooc-express-app:latest registry.heroku.com/mooc-express-app/web
+            docker push registry.heroku.com/mooc-express-app/web
+        
       - name: Release to Heroku
         run: heroku container:release web -a mooc-express-app
