@@ -1,0 +1,26 @@
+name: Deploy to Heroku
+
+on:
+  workflow_run:
+    workflows:
+      - "Publish image to Docker Hub"
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Heroku
+        run: |
+          echo "${{ secrets.HEROKU_API_KEY }}" | docker login --username=_ --password-stdin registry.heroku.com
+
+      - name: Push Docker image to Heroku
+        run: docker push registry.heroku.com/mooc-express-app/web
+
+      - name: Release to Heroku
+        run: heroku container:release web -a mooc-express-app
