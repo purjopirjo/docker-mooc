@@ -1,0 +1,16 @@
+FROM golang:alpine AS gobuild
+WORKDIR /app
+COPY example-backend .
+RUN go mod download && go mod verify && go build -o server
+
+FROM alpine
+RUN apk update \
+    && apk add ca-certificates \
+    && adduser --disabled-password --gecos "" --uid 1000 gouser \
+    && rm -rf /var/cache/*
+WORKDIR /usr/src/app
+COPY --chown=gouser:gouser --from=gobuild /app/server /usr/src/app
+USER gouser
+ENV REQUEST_ORIGIN=http://localhost
+EXPOSE 8080
+CMD ./server

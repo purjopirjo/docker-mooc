@@ -1,0 +1,13 @@
+FROM node:16.20.0-alpine AS build
+WORKDIR /home/node/app
+COPY example-frontend .
+RUN npm ci && REACT_APP_BACKEND_URL=http://localhost/api npm run build
+
+FROM node:16.20.0-alpine AS production
+WORKDIR /home/node/app
+RUN npm install -g serve --quiet \
+    && rm -rf /var/cache/*
+COPY --chown=node:node --from=build /home/node/app/build ./build
+USER node
+CMD serve -s -l 5000 build
+EXPOSE 5000

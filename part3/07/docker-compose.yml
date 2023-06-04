@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ../../part1/14/example-frontend/build:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+
+  db:
+    image: postgres:alpine3.18
+    restart: unless-stopped
+    volumes:
+      - ./database:/var/lib/postgresql/data:rw
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+
+  redis:
+    image: redis:7.2-rc2-alpine3.18
+    volumes:
+      - ./cache:/data:rw
+
+  backend:
+    build:
+      context: .
+      dockerfile: DockerfileBack
+    depends_on:
+      - db
+      - redis
+
+  frontend:
+    build:
+      context: .
+      dockerfile: DockerfileFront
+    depends_on:
+      - backend

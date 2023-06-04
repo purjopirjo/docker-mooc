@@ -1,0 +1,10 @@
+FROM golang:alpine
+WORKDIR /usr/src/app
+COPY example-backend .
+RUN go mod download && go mod verify
+RUN go build
+RUN adduser -DH gouser
+RUN chown -R gouser:gouser /usr/src/app
+USER gouser
+CMD ["./server"]
+EXPOSE 8080
