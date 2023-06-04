@@ -1,7 +1,4 @@
 ```
-cp ../12/Dockerfile ./frontDockerfile
-cp ../13/Dockerfile ./backDockerfile
-nano frontDockerfile backDockerfile
 cp -r ../12/material-applications/example-frontend .
 cp -r ../12/material-applications/example-backend .
 docker build . -t exer14front -f ./frontDockerfile

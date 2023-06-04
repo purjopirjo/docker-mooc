@@ -3,7 +3,7 @@ name: Publish image to Docker Hub
 on:
   push:
     paths:
-      - 'part3/1/express-app/**'
+      - 'part3/01/express-app/**'
     branches:
       - main
 
@@ -24,7 +24,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: part3/1/express-app
-          file: part3/1/express-app/Dockerfile
+          context: part3/01/express-app
+          file: part3/01/express-app/Dockerfile
           push: true
           tags: servufi/mooc-express-app:latest
